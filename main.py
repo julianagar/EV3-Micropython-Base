@@ -15,7 +15,9 @@ ev3 = EV3Brick()
 # Initialize the motors.
 left_motor = Motor(Port.B)
 right_motor = Motor(Port.C)
-touchSensor = TouchSensor(Port.S1)
+chainSaw = Motor(Port.A)
+touchSensor1 = TouchSensor(Port.S1)
+touchSensor2 = TouchSensor(Port.S2)
 ultraSensor = UltrasonicSensor(Port.S4) 
 
 # Initialize the drive base. 
@@ -35,5 +37,11 @@ while touchSensor.pressed() == False:
             turnAngle = UltrasonicSensor.distance()
             ev3.screen.print(touchSensor())
 
-    robot.turn(turnAngle)
-    robot.move(5000)
+    while touchSensor2.pressed() == False:
+        robot.turn(turnAngle)
+        robot.drive(1000)
+        if touchSensor2.pressed():
+            break
+
+    
+    
