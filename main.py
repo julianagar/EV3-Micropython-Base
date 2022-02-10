@@ -9,38 +9,31 @@ from pybricks.media.ev3dev import SoundFile, ImageFile
 
 import challengeTemplate
 
-# Use the following links to access the documentation
-# How to control the EV3: https://docs.pybricks.com/en/v2.0/hubs.html#pybricks.hubs.EV3Brick
-# How to control the robot: https://docs.pybricks.com/en/v2.0/ev3devices.html
-# How to implement timing and logging in your program: https://pybricks.com/ev3-micropython/tools.html
-# Rule book: https://firstinspiresst01.blob.core.windows.net/first-forward/fll-challenge/fll-challenge-cargo-connect-robot-game-rulebook.pdf
-
-# --- Begin Example Program ---
-
 # Initialize the EV3 Brick.
 ev3 = EV3Brick()
 
 # Initialize the motors.
 left_motor = Motor(Port.B)
 right_motor = Motor(Port.C)
+touchSensor = TouchSensor(Port.S1)
+ultraSensor = UltrasonicSensor(Port.S4) 
 
 # Initialize the drive base. 
 # MIGHT WANT TO CHECK TO MAKE SURE THIS IS RIGHT
 robot = DriveBase(left_motor, right_motor, wheel_diameter=55.5, axle_track=104)
+robot.settings(10000, 10000, 7000, 7000)
 
-# Go forward and backwards for one meter.
-robot.straight(1000)
 ev3.speaker.beep()
+ev3.screen.print(UltrasonicSensor.distance(silent=False))
+ev3.screen.print(touchSensor)
 
-robot.straight(-1000)
-ev3.speaker.beep()
+while touchSensor.pressed() == False:
+    while UltrasonicSensor.distance() == 0:
+        robot.turn(-180)
+        robot.turn(180)
+        if UltrasonicSensor.distance() > 0: 
+            turnAngle = UltrasonicSensor.distance()
+            ev3.screen.print(touchSensor())
 
-# Turn clockwise by 360 degrees and back again.
-robot.turn(360)
-ev3.speaker.beep()
-
-robot.turn(-360)
-ev3.speaker.beep()
-
-challengeTemplate.doChallenge(robot)
-# --- End Example Program ---
+    robot.turn(turnAngle)
+    robot.move(5000)
